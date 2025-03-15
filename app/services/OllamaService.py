@@ -1,4 +1,3 @@
-from app.models.model import ModelRequest
 import subprocess
 import ollama
 import psutil
@@ -21,9 +20,9 @@ class OllamaService:
         """Start the Ollama server and wait until it's ready."""
         try:
             process = subprocess.Popen(['ollama', 'serve'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            for _ in range(30):  # Retry up to 30 times (30 seconds)
+            for _ in range(30):
                 if self.is_ollama_running():
-                    return  # Server is ready
+                    return
                 time.sleep(1)
             process.terminate()
             raise HTTPException(status_code=500, detail="Ollama server did not start within the expected time.")
@@ -39,7 +38,7 @@ class OllamaService:
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE
                 )
-                stdout, stderr = process.communicate(timeout=300)  # Wait up to 5 minutes
+                stdout, stderr = process.communicate(timeout=300)
                 if process.returncode != 0:
                     raise HTTPException(
                         status_code=500,
