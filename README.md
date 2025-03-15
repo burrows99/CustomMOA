@@ -7,3 +7,6 @@ pip freeze > requirements.txt
 
 uvicorn app.main:app --reload for dev server start
 uvicorn app.main:app for prod server start
+
+
+run container using this sudo /bin/bash ./start-container.sh
