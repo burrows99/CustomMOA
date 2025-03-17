@@ -7,7 +7,12 @@ from fastapi import HTTPException
 class OllamaService:
     def __init__(self):
         self.start_ollama_server()
-        self.installed_models = list(map(lambda model: model.model, ollama.list().models))
+        self.installed_model_names = []
+        self.update_installed_model_names_list()
+
+    def update_installed_model_names_list(self):
+        self.installed_model_names = list(map(lambda model: model.model, ollama.list().models))
+        return self.installed_model_names
 
     def is_ollama_running(self) -> bool:
         """Check if the Ollama server is running."""
@@ -31,7 +36,7 @@ class OllamaService:
 
     def install_model(self, model_name: str):
         """Install the specified model if not already installed."""
-        if model_name not in self.installed_models:
+        if model_name not in self.installed_model_names:
             try:
                 process = subprocess.Popen(
                     ["ollama", "pull", model_name],
@@ -44,8 +49,8 @@ class OllamaService:
                         status_code=500,
                         detail=f"Failed to install model: {model_name}. Error: {stderr.decode().strip()}"
                     )
-                self.installed_models = ollama.list()
-                if model_name not in self.installed_models:
+                self.update_installed_model_names_list()
+                if model_name not in self.installed_model_names:
                     raise HTTPException(
                         status_code=500,
                         detail=f"Model {model_name} installation verification failed."
@@ -65,7 +70,7 @@ class OllamaService:
 
     def is_model_installed(self, model_name: str) -> bool:
         """Check if the model name is a substring of any installed model names."""
-        return any(model_name in installed_model for installed_model in self.installed_models)
+        return any(model_name in installed_model for installed_model in self.installed_model_names)
 
     def query_model(self, model_name: str, prompt: str):
         """Query the specified model with the given prompt."""
