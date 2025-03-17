@@ -7,12 +7,16 @@ from fastapi import HTTPException
 class OllamaService:
     def __init__(self):
         self.start_ollama_server()
-        self.installed_model_names = []
+        self.installedModelNames = []
         self.update_installed_model_names_list()
 
     def update_installed_model_names_list(self):
-        self.installed_model_names = list(map(lambda model: model.model, ollama.list().models))
-        return self.installed_model_names
+        self.installedModelNames = list(map(lambda model: model.model, ollama.list().models))
+        return self.installedModelNames
+
+    def is_model_installed(self, modelName: str) -> bool:
+        return modelName in self.installedModelNames
+
 
     def is_ollama_running(self) -> bool:
         """Check if the Ollama server is running."""
@@ -34,12 +38,12 @@ class OllamaService:
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Failed to start Ollama server: {str(e)}")
 
-    def install_model(self, model_name: str):
+    def install_model(self, modelName: str):
         """Install the specified model if not already installed."""
-        if model_name not in self.installed_model_names:
+        if not self.is_model_installed(modelName):
             try:
                 process = subprocess.Popen(
-                    ["ollama", "pull", model_name],
+                    ["ollama", "pull", modelName],
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE
                 )
@@ -47,20 +51,20 @@ class OllamaService:
                 if process.returncode != 0:
                     raise HTTPException(
                         status_code=500,
-                        detail=f"Failed to install model: {model_name}. Error: {stderr.decode().strip()}"
+                        detail=f"Failed to install model: {modelName}. Error: {stderr.decode().strip()}"
                     )
                 self.update_installed_model_names_list()
-                if model_name not in self.installed_model_names:
+                if not self.is_model_installed(modelName):
                     raise HTTPException(
                         status_code=500,
-                        detail=f"Model {model_name} installation verification failed."
+                        detail=f"Model {modelName} installation verification failed."
                     )
             except subprocess.TimeoutExpired:
                 process.kill()
                 stdout, stderr = process.communicate()
                 raise HTTPException(
                     status_code=500,
-                    detail=f"Model installation timed out: {model_name}. Error: {stderr.decode().strip()}"
+                    detail=f"Model installation timed out: {modelName}. Error: {stderr.decode().strip()}"
                 )
             except Exception as e:
                 raise HTTPException(
@@ -68,9 +72,9 @@ class OllamaService:
                     detail=f"An unexpected error occurred during model installation: {str(e)}"
                 )
 
-    def is_model_installed(self, model_name: str) -> bool:
+    def is_model_installed(self, modelName: str) -> bool:
         """Check if the model name is a substring of any installed model names."""
-        return any(model_name in installed_model for installed_model in self.installed_model_names)
+        return any(modelName in installedModel for installedModel in self.installedModelNames)
 
     def query_model(self, model_name: str, prompt: str):
         """Query the specified model with the given prompt."""
