@@ -68,6 +68,39 @@ curl -X DELETE http://localhost:11434/api/delete -d '{
 }'
 ```
 
+## Frontend Interface
+
+A React-based UI for interacting with Ollama models through the containerized API.
+
+![Interface Preview](./frontend/public/screenshot.png) <!-- Add screenshot later -->
+
+### Features
+- Chat interface for LLM conversations
+- Model selection dropdown
+- Response streaming support
+- Conversation history
+
+### Running the Full Stack
+
+1. Start both containers:
+```bash
+docker compose up -d --build
+```
+
+2. Access the interfaces:
+- **Frontend UI**: `http://localhost:3000`
+- **Ollama API**: `http://localhost:11434`
+
+### Development
+```bash
+# Frontend-specific commands
+cd frontend
+npm install
+npm start
+```
+
+The frontend container automatically connects to the Ollama API container through Docker's internal network. No API key required for local development.
+
 ## Troubleshooting
 
 - **Model not found**: Pull the model first `docker exec ollama ollama pull <name>`
