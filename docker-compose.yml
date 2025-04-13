@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    ports:
+      - "11434:11434"  # API port
+    volumes:
+      - ollama:/root/.ollama  # Named volume
+      - ./models:/models      # Bind mount
+    environment:
+      - OLLAMA_ORIGINS=*      # Allow all CORS origins
+      - OLLAMA_HOST=0.0.0.0   # Bind to all interfaces
+      - OLLAMA_MODELS=/models  # Custom model storage path
+
+volumes:
+  ollama:  # Required declaration for named volume
