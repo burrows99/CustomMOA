@@ -1,12 +1,75 @@
-download ollama from https://ollama.com/download
-pip install -r requirements.txt 
-python main.py
-ollama run <model-name>  (for example llama3.2) to run the models
+# Ollama Docker Setup
 
-pip freeze > requirements.txt
+Run large language models locally using Docker and Ollama.
 
-uvicorn app.main:app --reload for dev server start
-uvicorn app.main:app for prod server start
+## Prerequisites
+- Docker Engine 20.10+
+- 4GB+ RAM (8GB recommended)
+- Mac/Linux/Windows (WSL2)
 
+## Quick Start
 
-run container using this sudo /bin/bash ./start-container.sh
+1. **Start the service**:
+```bash
+docker compose up -d
+```
+
+2. **Install a model** (TinyLlama example):
+```bash
+# Using Docker CLI
+docker exec ollama ollama pull tinyllama
+
+# Or using API
+curl http://localhost:11434/api/pull -d '{
+  "name": "tinyllama"
+}'
+```
+
+3. **Use the API** (equivalent to Docker CLI commands):
+```bash
+# API request (same as 'docker exec ollama ollama run...')
+curl http://localhost:11434/api/generate -d '{
+  "model": "tinyllama",
+  "prompt": "Why is the sky blue?",
+  "stream": false
+}'
+```
+
+## API vs Docker CLI Equivalents
+
+| Operation          | Docker CLI                          | API Endpoint       |
+|--------------------|-------------------------------------|--------------------|
+| Pull model         | `docker exec ollama ollama pull`    | `POST /api/pull`   |
+| List models        | `docker exec ollama ollama list`    | `GET /api/tags`    |
+| Remove model       | `docker exec ollama ollama rm`      | `DELETE /api/delete` |
+| Run model          | `docker exec ollama ollama run`     | `POST /api/generate` or `/api/chat` |
+| Model info         | `docker exec ollama ollama show`    | `POST /api/show`   |
+
+All operations available through Docker CLI can be performed directly via API calls to `http://localhost:11434`.
+
+## Ollama API Documentation
+
+Base URL: `http://localhost:11434`
+
+Full API documentation available at:  
+[Ollama REST API Reference](https://github.com/ollama/ollama/blob/main/docs/api.md)
+
+## Managing Models (API Examples)
+
+**List installed models**:
+```bash
+curl http://localhost:11434/api/tags
+```
+
+**Remove a model**:
+```bash
+curl -X DELETE http://localhost:11434/api/delete -d '{
+  "name": "tinyllama"
+}'
+```
+
+## Troubleshooting
+
+- **Model not found**: Pull the model first `docker exec ollama ollama pull <name>`
+- **Port conflict**: Change `11434` in `docker-compose.yml`
+- **Low memory**: Use smaller models like `tinyllama` or `phi3` 
