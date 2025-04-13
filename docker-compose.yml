@@ -1,4 +1,4 @@
-version: '3.8'
+# version: '3.8'
 
 services:
   ollama:
@@ -13,6 +13,21 @@ services:
       - OLLAMA_ORIGINS=*      # Allow all CORS origins
       - OLLAMA_HOST=0.0.0.0   # Bind to all interfaces
       - OLLAMA_MODELS=/models  # Custom model storage path
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.${ENVIRONMENT}
+    container_name: react-frontend.${ENVIRONMENT}
+    ports:
+      - "3000:3000"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - ollama
 
 volumes:
   ollama:  # Required declaration for named volume
