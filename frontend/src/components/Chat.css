@@ -1,7 +1,7 @@
 .chat-container {
-  max-width: 800px;
+  /* max-width: 800px; */
   width: 100%;
-  height: 100vh;
+  /* height: 100vh; */
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -9,13 +9,20 @@
 }
 
 .chat-messages {
+  flex: 1;
+  /* padding: 20px; */
+  overflow-y: auto;
+  background-color: #e5ddd5;
+  background-image: 
+    linear-gradient(rgba(229,221,213,.85), rgba(229,221,213,.85)),
+    url("https://media.istockphoto.com/id/1201667381/vector/customer-support-related-seamless-pattern-and-background-with-line-icons.jpg?s=1024x1024&w=is&k=20&c=T2pk0RS72F09oTySK6njkHF95j5Z49dOquzAuqywL6U=");
+  background-repeat: repeat;
+  background-size: auto;
   margin-bottom: 20px;
   border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 15px;
   min-height: 400px;
   max-height: 60vh;
-  overflow-y: auto;
   width: 100%;
   margin-left: 0;
   margin-right: 0;
@@ -36,6 +43,8 @@
   background-color: white;
   margin-right: auto;
   border-bottom-left-radius: 2px;
+  margin-left: 10px;
+  margin-top: 10px;
 }
 
 .chat-message.user {
@@ -43,6 +52,8 @@
   margin-left: auto;
   border-bottom-right-radius: 2px;
   text-align: right;
+  margin-right: 10px;
+  margin-top: 10px;
 }
 
 .message-header {
